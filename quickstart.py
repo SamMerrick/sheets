@@ -14,9 +14,9 @@ from googleapiclient.errors import HttpError
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a spreadsheet.
-SPREADSHEET_ID = '1XSOzWHLWIeZgntDPPP85vKgQAnVxNPqhlPbs8OjRdLA'
+SPREADSHEET_ID = '1mw_MzbOG06l9kBQv9BIb7b3lXK__A7chJqI0_giYn04'
 DATA_RANGE = 'Cleaned!A2:E'
-NEW_RANGE = 'Cleaned!D2:D'
+NEW_RANGE = 'Cleaned!D2:E'
 
 def main():
     """Shows basic usage of the Sheets API.
@@ -53,14 +53,17 @@ def main():
             print('No data found.')
             return
 
-        scores = []
+        readability = []
+        readingTime = []
 
         for row in values:
-            scores.append(textstat.text_standard(row[0], float_output=True))
+            readability.append(textstat.text_standard(row[0], float_output=True))
+            readingTime.append(textstat.reading_time(row[0], ms_per_char=14.69))
+
         
         body = {
             'range': NEW_RANGE,
-            'values': [scores],
+            'values': [readability, readingTime],
             'majorDimension': "Columns"
         }
         result = service.spreadsheets().values().update(
